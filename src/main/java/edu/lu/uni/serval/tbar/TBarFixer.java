@@ -107,7 +107,11 @@ public class TBarFixer extends AbstractFixer {
 				if (!isTestFixPatterns && minErrorTest == 0) break;
 				if (this.patchId >= 10000) break;
 			}
-			if (!isTestFixPatterns && minErrorTest == 0) break;
+			log.info("HELO: " + suspciousCodeFile + "@" + suspiciousCode.lineNumber)
+			if (!isTestFixPatterns && minErrorTest == 0) {
+				log.info("Suspcious statement used: " + suspiciousCode.classPath + "@" + suspiciousCode.lineNumber)
+				break;
+			}
 			if (this.patchId >= 10000) break;
         }
 		log.info("=======TBar: Finish off fixing======");
