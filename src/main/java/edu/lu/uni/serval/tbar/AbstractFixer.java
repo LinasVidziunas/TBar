@@ -65,6 +65,8 @@ public abstract class AbstractFixer implements IFixer {
 	protected int patchId = 0;
 	protected int comparablePatches = 0;
         protected long totalNumberTestExecutions = 0;
+        protected String lastSuspiciousClassName = "no.class";
+        protected int lastSuspiciousLineNumber = -1;
 //	private TimeLine timeLine;
 	protected Dictionary dic = null;
 	
@@ -211,6 +213,9 @@ public abstract class AbstractFixer implements IFixer {
 		String suspiciousClassName = suspiciousCode.classPath;
 		int buggyLine = suspiciousCode.lineNumber;
 		
+                lastSuspiciousClassName = suspiciousClassName;
+                lastSuspiciousLineNumber = buggyLine;
+
 		log.debug(suspiciousClassName + " ===" + buggyLine);
 		if (suspiciousClassName.contains("$")) {
 			suspiciousClassName = suspiciousClassName.substring(0, suspiciousClassName.indexOf("$"));
@@ -364,6 +369,7 @@ public abstract class AbstractFixer implements IFixer {
                                         log.info("NTE: " + totalNumberTestExecutions);
                                         log.info("NPC (all): " + patchId);
                                         log.info("NPC (compiling): " + comparablePatches);
+                                        log.info("Susupicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
 					String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 					System.out.println(patchStr);
 					if (patchStr == null || !patchStr.startsWith("diff")) {
@@ -392,6 +398,7 @@ public abstract class AbstractFixer implements IFixer {
                                                 log.info("NTE: " + totalNumberTestExecutions);
                                                 log.info("NPC (all): " + patchId);
                                                 log.info("NPC (compiling): " + comparablePatches);
+                                                log.info("Susupicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
 						String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 						if (patchStr == null || !patchStr.startsWith("diff")) {
 							FileHelper.outputToFile(Configuration.outputPath + this.dataType + "/PartiallyFixedBugs/" + buggyProject + "/Patch_" + patchId + "_" + comparablePatches + ".txt",
