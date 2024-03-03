@@ -42,6 +42,7 @@ public abstract class AbstractFixer implements IFixer {
 	protected String path = "";
 	protected String buggyProject = "";     // The buggy project name.
 	protected String defects4jPath;         // The path of local installed defects4j.
+        public int totalTestCases = 0;          // Number of test cases.
 	public int minErrorTest;                // Number of failed test cases before fixing.
 	public int minErrorTest_;
 	protected int minErrorTestAfterFix = 0; // Number of failed test cases after fixing
@@ -63,6 +64,7 @@ public abstract class AbstractFixer implements IFixer {
 	public String dataType = "";
 	protected int patchId = 0;
 	protected int comparablePatches = 0;
+        protected long totalNumberTestExecutions = 0;
 //	private TimeLine timeLine;
 	protected Dictionary dic = null;
 	
@@ -96,6 +98,31 @@ public abstract class AbstractFixer implements IFixer {
 		
 		readPreviouslyFailedTestCases();
 		
+                // Code block on line 90 compiles the project
+                // and then executes all test cases to get the minErrorTest.
+                // The following block reads the number of test cases in the project from the all_tests file
+                // and adds it to the total number of test cases.
+                // This is then used to calculate the total number of test executions.
+                File allTestsFile = new File(fullBuggyProjectPath + "/" + Configuration.allTestsPath);
+                if (allTestsFile.exists()) {
+                        try {
+                                BufferedReader reader = new BufferedReader(new FileReader(allTestsFile));
+                                String line = reader.readLine();
+                                while (line != null) {
+                                        totalTestCases++;
+                                        // For each line of 'all_tests' file, increment the total number test executions
+                                        // to compensate for executing all test cases previously when updating minErrorTest.
+                                        totalNumberTestExecutions++;
+                                        line = reader.readLine();
+                                }
+                                reader.close();
+                        } catch (IOException e) {
+                                e.printStackTrace();
+                        }
+                } else {
+                        log.error("The all_tests file does not exist, NTE will only consider the tests cases which are executed without defects4j.");
+                }
+
 //		createDictionary();
 	}
 
@@ -283,6 +310,20 @@ public abstract class AbstractFixer implements IFixer {
 						+ PathUtils.buildTestClassPath(dp.classPath, dp.testClassPath)
 						+ " org.junit.runner.JUnitCore " + this.failedTestCaseClasses), buggyProject, 2);
 
+                                // Count the number of executed test cases in the results string.
+                                // The results string is the output from JUnitCore.
+                                // While running JUnitCore in the terminal, it outputs the number of test cases executed.
+                                // However, this output does not appear here.
+                                // Hence, this workaround that counts the dots in the results string, each representing an executed test case.
+                                long numberTestExecutions = 0;
+                                for (String line : results.split("\n")) {
+                                        if (line.matches("^(\\.|E)*$")){
+                                                numberTestExecutions = line.replace("E", "").length();
+                                        }
+                                }
+
+                                totalNumberTestExecutions += numberTestExecutions;
+
 				if (results.isEmpty()) {
 //					System.err.println(scn.suspiciousJavaFile + "@" + scn.buggyLine);
 //					System.err.println("Bug: " + buggyCode);
@@ -311,6 +352,7 @@ public abstract class AbstractFixer implements IFixer {
 			List<String> failedTestsAfterFix = new ArrayList<>();
 			int errorTestAfterFix = TestUtils.getFailTestNumInProject(fullBuggyProjectPath, this.defects4jPath,
 					failedTestsAfterFix);
+                        totalNumberTestExecutions += totalTestCases;
 			failedTestsAfterFix.removeAll(this.fakeFailedTestCasesList);
 			
 			if (errorTestAfterFix < minErrorTest) {
@@ -326,6 +368,9 @@ public abstract class AbstractFixer implements IFixer {
 				if (errorTestAfterFix == 0 || failedTestsAfterFix.isEmpty()) {
 					fixedStatus = 1;
 					log.info("Succeeded to fix the bug " + buggyProject + "====================");
+                                        log.info("NTE: " + totalNumberTestExecutions);
+                                        log.info("NPC (all): " + patchId);
+                                        log.info("NPC (compiling): " + comparablePatches);
 					String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 					System.out.println(patchStr);
 					if (patchStr == null || !patchStr.startsWith("diff")) {
@@ -351,6 +396,9 @@ public abstract class AbstractFixer implements IFixer {
 							minErrorTest = 0;
 						}
 						log.info("Partially Succeeded to fix the bug " + buggyProject + "====================");
+                                                log.info("NTE: " + totalNumberTestExecutions);
+                                                log.info("NPC (all): " + patchId);
+                                                log.info("NPC (compiling): " + comparablePatches);
 						String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 						if (patchStr == null || !patchStr.startsWith("diff")) {
 							FileHelper.outputToFile(Configuration.outputPath + this.dataType + "/PartiallyFixedBugs/" + buggyProject + "/Patch_" + patchId + "_" + comparablePatches + ".txt",
