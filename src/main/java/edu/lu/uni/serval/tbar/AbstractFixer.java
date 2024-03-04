@@ -342,7 +342,7 @@ public abstract class AbstractFixer implements IFixer {
 				}
 			} catch (IOException e) {
 				if (!(this.buggyProject.startsWith("Mockito") || this.buggyProject.startsWith("Closure") || this.buggyProject.startsWith("Time"))) {
-					log.debug(buggyProject + " ---Fixer: fix fail because of faile passing previously failed test cases! ");
+					log.debug(buggyProject + " ---Fixer: fix fail because of failed passing previously failed test cases! ");
 					continue;
 				}
 			}
@@ -369,7 +369,7 @@ public abstract class AbstractFixer implements IFixer {
                                         log.info("NTE: " + totalNumberTestExecutions);
                                         log.info("NPC (all): " + patchId);
                                         log.info("NPC (compiling): " + comparablePatches);
-                                        log.info("Susupicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
+                                        log.info("Suspicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
 					String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 					System.out.println(patchStr);
 					if (patchStr == null || !patchStr.startsWith("diff")) {
@@ -398,7 +398,7 @@ public abstract class AbstractFixer implements IFixer {
                                                 log.info("NTE: " + totalNumberTestExecutions);
                                                 log.info("NPC (all): " + patchId);
                                                 log.info("NPC (compiling): " + comparablePatches);
-                                                log.info("Susupicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
+                                                log.info("Suspicious statement: " + lastSuspiciousClassName + "@" + lastSuspiciousLineNumber);
 						String patchStr = TestUtils.readPatch(this.fullBuggyProjectPath);
 						if (patchStr == null || !patchStr.startsWith("diff")) {
 							FileHelper.outputToFile(Configuration.outputPath + this.dataType + "/PartiallyFixedBugs/" + buggyProject + "/Patch_" + patchId + "_" + comparablePatches + ".txt",
