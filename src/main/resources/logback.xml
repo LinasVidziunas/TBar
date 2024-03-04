@@ -3,7 +3,7 @@
 	<property name="APP_NAME" value="TBar"></property>
 	<contextName>${APP_NAME}</contextName>
 
-    <property name="LOG_HOME" value="logs" />  
+    <property name="LOG_HOME" value="logs" />
     
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -31,7 +31,7 @@
        </triggeringPolicy>
     </appender>
 
-    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" additivity="false" /> 
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" additivity="false" />
     <logger name="com.piedra.logback" level="DEBUG">
         <appender-ref ref="FILE"/>
     </logger>
