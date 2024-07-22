@@ -65,7 +65,7 @@ public abstract class AbstractFixer implements IFixer {
 	protected int patchId = 0;
 	protected int comparablePatches = 0;
         protected long totalNumberTestExecutions = 0;
-        protected String lastSuspiciousClassName = "no.class";
+        protected String lastSuspiciousClassName = "";
         protected int lastSuspiciousLineNumber = -1;
 //	private TimeLine timeLine;
 	protected Dictionary dic = null;
