@@ -100,7 +100,11 @@ public abstract class AbstractFixer implements IFixer {
 		
 		readPreviouslyFailedTestCases();
 		
-                // Read the number of test cases in the project from the all_tests file
+                // Code block on line 90 compiles the project
+                // and then executes all test cases to get the minErrorTest.
+                // The following block reads the number of test cases in the project from the all_tests file
+                // and adds it to the total number of test cases.
+                // This is then used to calculate the total number of test executions.
                 File allTestsFile = new File(fullBuggyProjectPath + "/" + Configuration.allTestsPath);
                 if (allTestsFile.exists()) {
                         try {
@@ -108,6 +112,9 @@ public abstract class AbstractFixer implements IFixer {
                                 String line = reader.readLine();
                                 while (line != null) {
                                         totalTestCases++;
+                                        // For each line of 'all_tests' file, increment the total number test executions
+                                        // to compensate for executing all test cases previously when updating minErrorTest.
+                                        totalNumberTestExecutions++;
                                         line = reader.readLine();
                                 }
                                 reader.close();
