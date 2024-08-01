@@ -1,6 +1,11 @@
 
-# TBar
-Template-based automated program repair
+# TBar - Template-based automated program repair
+
+This fork of TBar extends the [original upstream](https://github.com/TruX-DTF/TBar) with reporting of the Number of Tests Executed (NTE) metric. It is used for the experiments reported in the paper “The Impact of Program Reduction on Automated Program Repair”, by Linas Vidziunas, David Binkley, and Leon Moonen, published in the research track of the 40th International Conference on Software Maintenance and Evolution (ICSME 2024).
+
+The remainder of this README is as provided by the [original upstream](https://github.com/TruX-DTF/TBar)
+
+----
 
 
 I. Requirement
